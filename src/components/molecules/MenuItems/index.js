@@ -14,7 +14,7 @@ import Cloud from '@material-ui/icons/Cloud';
 const NavigationMenuItems = () => {
   return (
     <div>
-      <Link to="/" style={{ textDecoration: 'none' }}>
+      <Link to={`${process.env.PUBLIC_URL}/`} style={{ textDecoration: 'none' }}>
         <ListItem button>
           <ListItemIcon>
             <Map />
@@ -22,7 +22,7 @@ const NavigationMenuItems = () => {
           <ListItemText primary={'配置図'} />
         </ListItem>
       </Link>
-      <Link to="favorite" style={{ textDecoration: 'none' }}>
+      <Link to={`${process.env.PUBLIC_URL}/favorite`} style={{ textDecoration: 'none' }}>
         <ListItem button>
           <ListItemIcon>
             <Favorite />
@@ -30,7 +30,7 @@ const NavigationMenuItems = () => {
           <ListItemText primary={'お気に入りサークル'} />
         </ListItem>
       </Link>
-      <Link to="search" style={{ textDecoration: 'none' }}>
+      <Link to={`${process.env.PUBLIC_URL}/search`} style={{ textDecoration: 'none' }}>
         <ListItem button>
           <ListItemIcon>
             <Search />
@@ -38,7 +38,7 @@ const NavigationMenuItems = () => {
           <ListItemText primary={'サークル検索'} />
         </ListItem>
       </Link>
-      <Link to="purchase" style={{ textDecoration: 'none' }}>
+      <Link to={`${process.env.PUBLIC_URL}/purchase`} style={{ textDecoration: 'none' }}>
         <ListItem button>
           <ListItemIcon>
             <ShoppingCart />
@@ -47,7 +47,7 @@ const NavigationMenuItems = () => {
         </ListItem>
       </Link>
       <Divider />
-      <Link to="sync" style={{ textDecoration: 'none' }}>
+      <Link to={`${process.env.PUBLIC_URL}/sync`} style={{ textDecoration: 'none' }}>
         <ListItem button>
           <ListItemIcon>
             <Cloud />
