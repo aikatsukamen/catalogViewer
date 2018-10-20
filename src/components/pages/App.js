@@ -1,5 +1,6 @@
 import React from 'react';
 import { BrowserRouter, Route } from 'react-router-dom';
+
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { withStyles } from '@material-ui/core/styles';
@@ -37,6 +38,8 @@ const App = props => {
     </div>
   );
 
+  console.log(`${process.env.PUBLIC_URL}/favorite`);
+
   return (
     <div>
       <BrowserRouter>
@@ -45,10 +48,10 @@ const App = props => {
             <MenuItems />
           </DrawerMenu>
           <Route exact path={`${process.env.PUBLIC_URL}/`} render={() => <CircleMap map={props.map} favorite={props.favorite} selectCircle={props.showCircleDetail} />} />
-          <Route path={`${process.env.PUBLIC_URL}/favorite`} render={() => <FavoriteList circleInfo={props.circleInfo} favorite={props.favorite} selectCircle={props.showCircleDetail} deleteFavoriteCircle={props.deleteFavoriteCircle} />} />
-          <Route path={`${process.env.PUBLIC_URL}/search`} render={() => <CircleSearch circleInfo={props.circleInfo} search={props.searchResult} selectCircle={props.showCircleDetail} searchCircle={props.searchCircle} />} />
-          <Route path={`${process.env.PUBLIC_URL}/purchase`} component={PurchaseList} />
-          <Route path={`${process.env.PUBLIC_URL}/sync`} component={Sync} />
+          <Route path={'/favorite'} render={() => <FavoriteList circleInfo={props.circleInfo} favorite={props.favorite} selectCircle={props.showCircleDetail} deleteFavoriteCircle={props.deleteFavoriteCircle} />} />
+          <Route path={'/search'} render={() => <CircleSearch circleInfo={props.circleInfo} search={props.searchResult} selectCircle={props.showCircleDetail} searchCircle={props.searchCircle} />} />
+          <Route path={'/purchase'} component={PurchaseList} />
+          <Route path={'/sync'} component={Sync} />
           <Modal open={props.detailCircle.open} modalClose={props.closeCircleDetail}>
             <CircleDetail circleInfo={props.detailCircle.circleInfo} favorite={props.favorite} changeFavoriteId={props.changeFavoriteId} />
           </Modal>
