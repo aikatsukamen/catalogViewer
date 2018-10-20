@@ -1,5 +1,5 @@
 import { call, put, fork, take, select, takeEvery } from 'redux-saga/effects';
-import { REQUEST_LIST, successList, failureList, applyLoadData, SAVE_DATA, SEARCH_CIRCLE, applySearchList, openNotify, closeNotify } from '../actions';
+import { REQUEST_LIST, successList, failureList, applyLoadData, SAVE_DATA, SEARCH_CIRCLE, SEARCH_KKT, applySearchList, openNotify, closeNotify, SEARCH_TO_FAVORITE, changeFavoriteId, changeSearchToFavoriteId } from '../actions';
 import API from '../api';
 
 function* handleGetList(action) {
@@ -66,9 +66,35 @@ function* handleSearchCircle(action) {
       console.log(circle);
     }
   }
+  yield put(applySearchList(searchResult));
+}
+
+// 検索するよ
+function* handleSearchKkt(action) {
+  const state = yield select();
+  const searchResult = [];
+
+  for (const circle of state.reducer.circleInfo) {
+    try {
+      if (circle.kktId !== '') searchResult.push(circle.spaceNo);
+    } catch (e) {
+      console.log(e);
+      console.log(circle);
+    }
+  }
 
   // 検索結果を反映
   yield put(applySearchList(searchResult));
+}
+
+function* handleSearchToFavorite(action) {
+  const state = yield select();
+  const id = action.payload;
+
+  for (const spaceNo of state.reducer.searchResult) {
+    yield put(changeFavoriteId({ spaceNo, id }));
+  }
+  yield put(changeSearchToFavoriteId(id));
 }
 
 export default function* rootSaga() {
@@ -76,5 +102,7 @@ export default function* rootSaga() {
   yield takeEvery(REQUEST_LIST, handleGetList);
   yield takeEvery(SAVE_DATA, handleSave);
   yield takeEvery(SEARCH_CIRCLE, handleSearchCircle);
+  yield takeEvery(SEARCH_KKT, handleSearchKkt);
+  yield takeEvery(SEARCH_TO_FAVORITE, handleSearchToFavorite);
   yield call(handleGetList);
 }

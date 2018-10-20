@@ -1,5 +1,5 @@
 import { combineReducers } from 'redux';
-import { OPEN_NOTIFY, CLOSE_NOTIFY, REQUEST_LIST, SUCCESS_LIST, FAILURE_LIST, SHOW_CIRCLE_DETAIL, CLOSE_CIRCLE_DETAIL, CHANGE_FAVORITE_ID, DELETE_FAVORITE_CIRCLE, APPLY_SEARCH_LIST, APPLY_LOAD_DATA } from '../actions';
+import { OPEN_NOTIFY, CLOSE_NOTIFY, REQUEST_LIST, SUCCESS_LIST, FAILURE_LIST, SHOW_CIRCLE_DETAIL, CLOSE_CIRCLE_DETAIL, CHANGE_FAVORITE_ID, DELETE_FAVORITE_CIRCLE, APPLY_SEARCH_LIST, APPLY_LOAD_DATA, CHANGE_SEARCH_TO_FAVORITE_ID } from '../actions';
 
 const initial = {
   status: 'init',
@@ -8,6 +8,7 @@ const initial = {
   map: [],
   // サークル情報
   circleInfo: [],
+  searchToFavoriteId: '-1',
   // お気に入りリスト
   favorite: [
     {
@@ -97,6 +98,9 @@ const reducer = (state = initial, action) => {
         });
       }
       return { ...state, favorite: newFavorite };
+    }
+    case CHANGE_SEARCH_TO_FAVORITE_ID: {
+      return { ...state, searchToFavoriteId: action.payload };
     }
     // 検索結果を反映
     case APPLY_SEARCH_LIST: {

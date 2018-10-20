@@ -28,7 +28,8 @@ const styles = theme => ({
     wordBreak: 'keep-all',
     padding: 0,
     border: 0,
-    width: '50px'
+    width: '50px',
+    backgroundColor: 'gray'
   },
   circleSpaceCell: {
     wordBreak: 'keep-all',
@@ -53,12 +54,21 @@ const CircleMap = props => {
       const rowIndex = index;
       const rowDom = rowData.map((colData, colIndex) => {
         if (colData) {
+          // 何か文字が入ってるセル
           // お気に入りに合致するサークルの場合は、その色にする
           let cellColor = 'white';
+
           for (const fav of props.favorite) {
-            if (fav.spaceNo.indexOf(colData) > -1) {
-              cellColor = fav.color;
-              break;
+            for (const favSpaceNo of fav.spaceNo) {
+              // console.log(`favSpaceNo：${favSpaceNo}`);
+              // 合体サークル等に備えて分割する
+              const spaceNoList = favSpaceNo.split('.');
+              if (spaceNoList.length === 2) spaceNoList[1] = spaceNoList[0].slice(0, 1) + spaceNoList[1];
+              // console.log(spaceNoList);
+              if (spaceNoList.indexOf(colData) > -1) {
+                cellColor = fav.color;
+                break;
+              }
             }
           }
 
@@ -68,6 +78,7 @@ const CircleMap = props => {
             </TableCell>
           );
         } else {
+          // 空のセル
           return (
             <TableCell key={`cell_${rowIndex}_${colIndex}`} className={props.classes.emptyCell}>
               {colData}

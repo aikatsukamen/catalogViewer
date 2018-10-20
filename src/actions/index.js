@@ -30,10 +30,17 @@ export const CHANGE_FAVORITE_ID = 'CHANGE_FAVORITE_ID';
 export const changeFavoriteId = createAction(CHANGE_FAVORITE_ID);
 export const DELETE_FAVORITE_CIRCLE = 'DELETE_FAVORITE_CIRCLE';
 export const deleteFavoriteCircle = createAction(DELETE_FAVORITE_CIRCLE);
+export const SEARCH_TO_FAVORITE = 'SEARCH_TO_FAVORITE';
+export const searchToFavorite = createAction(SEARCH_TO_FAVORITE);
+export const CHANGE_SEARCH_TO_FAVORITE_ID = 'CHANGE_SEARCH_TO_FAVORITE_ID';
+export const changeSearchToFavoriteId = createAction(CHANGE_SEARCH_TO_FAVORITE_ID);
 
 // サークル検索
 export const SEARCH_CIRCLE = 'SEARCH_CIRCLE';
 export const searchCircle = createAction(SEARCH_CIRCLE);
+export const SEARCH_KKT = 'SEARCH_KKT';
+export const searchKkt = createAction(SEARCH_KKT);
+
 export const APPLY_SEARCH_LIST = 'APPLY_SEARCH_LIST';
 export const applySearchList = createAction(APPLY_SEARCH_LIST);
 

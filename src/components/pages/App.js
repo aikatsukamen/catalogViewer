@@ -6,7 +6,7 @@ import { connect } from 'react-redux';
 import { withStyles } from '@material-ui/core/styles';
 import Button from '@material-ui/core/Button';
 import './App.css';
-import { showCircleDetail, closeCircleDetail, changeFavoriteId, deleteFavoriteCircle, searchCircle, saveData, closeNotify } from '../../actions';
+import { showCircleDetail, closeCircleDetail, changeFavoriteId, deleteFavoriteCircle, searchCircle, saveData, closeNotify, searchKkt, searchToFavorite } from '../../actions';
 import DrawerMenu from '../molecules/DrawerMenu';
 import MenuItems from '../molecules/MenuItems';
 import CircleMap from '../organisms/CircleMap';
@@ -48,7 +48,21 @@ const App = props => {
           </DrawerMenu>
           <Route exact path={`${process.env.PUBLIC_URL}/`} render={() => <CircleMap map={props.map} favorite={props.favorite} selectCircle={props.showCircleDetail} />} />
           <Route path={`${process.env.PUBLIC_URL}/favorite`} render={() => <FavoriteList circleInfo={props.circleInfo} favorite={props.favorite} selectCircle={props.showCircleDetail} deleteFavoriteCircle={props.deleteFavoriteCircle} />} />
-          <Route path={`${process.env.PUBLIC_URL}/search`} render={() => <CircleSearch circleInfo={props.circleInfo} search={props.searchResult} selectCircle={props.showCircleDetail} searchCircle={props.searchCircle} />} />
+          <Route
+            path={`${process.env.PUBLIC_URL}/search`}
+            render={() => (
+              <CircleSearch
+                circleInfo={props.circleInfo}
+                search={props.searchResult}
+                favorite={props.favorite}
+                selectCircle={props.showCircleDetail}
+                searchCircle={props.searchCircle}
+                searchKkt={props.searchKkt}
+                searchToFavoriteId={props.searchToFavoriteId}
+                searchToFavorite={props.searchToFavorite}
+              />
+            )}
+          />
           <Route path={`${process.env.PUBLIC_URL}/purchase`} component={PurchaseList} />
           <Route path={`${process.env.PUBLIC_URL}/sync`} component={Sync} />
           <Modal open={props.detailCircle.open} modalClose={props.closeCircleDetail}>
@@ -70,7 +84,8 @@ function mapStateToProps(state) {
     circleInfo: state.reducer.circleInfo,
     detailCircle: state.reducer.detailCircle,
     searchResult: state.reducer.searchResult,
-    notify: state.reducer.notify
+    notify: state.reducer.notify,
+    searchToFavoriteId: state.reducer.searchToFavoriteId
   };
 }
 
@@ -82,7 +97,9 @@ const mapDispatchToProps = {
   deleteFavoriteCircle,
   searchCircle,
   saveData,
-  closeNotify
+  closeNotify,
+  searchKkt,
+  searchToFavorite
 };
 
 App.propTypes = {
@@ -100,7 +117,10 @@ App.propTypes = {
   searchCircle: PropTypes.func.isRequired,
   saveData: PropTypes.func,
   notify: PropTypes.object.isRequired,
-  closeNotify: PropTypes.func.isRequired
+  closeNotify: PropTypes.func.isRequired,
+  searchKkt: PropTypes.func.isRequired,
+  searchToFavoriteId: PropTypes.string.isRequired,
+  searchToFavorite: PropTypes.func.isRequired
 };
 
 export default connect(
