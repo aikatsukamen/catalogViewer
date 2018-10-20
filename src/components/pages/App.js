@@ -48,10 +48,10 @@ const App = props => {
             <MenuItems />
           </DrawerMenu>
           <Route exact path={`${process.env.PUBLIC_URL}/`} render={() => <CircleMap map={props.map} favorite={props.favorite} selectCircle={props.showCircleDetail} />} />
-          <Route path={'/favorite'} render={() => <FavoriteList circleInfo={props.circleInfo} favorite={props.favorite} selectCircle={props.showCircleDetail} deleteFavoriteCircle={props.deleteFavoriteCircle} />} />
-          <Route path={'/search'} render={() => <CircleSearch circleInfo={props.circleInfo} search={props.searchResult} selectCircle={props.showCircleDetail} searchCircle={props.searchCircle} />} />
-          <Route path={'/purchase'} component={PurchaseList} />
-          <Route path={'/sync'} component={Sync} />
+          <Route path={`${process.env.PUBLIC_URL}/favorite`} render={() => <FavoriteList circleInfo={props.circleInfo} favorite={props.favorite} selectCircle={props.showCircleDetail} deleteFavoriteCircle={props.deleteFavoriteCircle} />} />
+          <Route path={`${process.env.PUBLIC_URL}/search`} render={() => <CircleSearch circleInfo={props.circleInfo} search={props.searchResult} selectCircle={props.showCircleDetail} searchCircle={props.searchCircle} />} />
+          <Route path={`${process.env.PUBLIC_URL}/purchase`} component={PurchaseList} />
+          <Route path={`${process.env.PUBLIC_URL}/sync`} component={Sync} />
           <Modal open={props.detailCircle.open} modalClose={props.closeCircleDetail}>
             <CircleDetail circleInfo={props.detailCircle.circleInfo} favorite={props.favorite} changeFavoriteId={props.changeFavoriteId} />
           </Modal>
