@@ -36,3 +36,9 @@ export const SEARCH_CIRCLE = 'SEARCH_CIRCLE';
 export const searchCircle = createAction(SEARCH_CIRCLE);
 export const APPLY_SEARCH_LIST = 'APPLY_SEARCH_LIST';
 export const applySearchList = createAction(APPLY_SEARCH_LIST);
+
+// 通知欄表示
+export const OPEN_NOTIFY = 'OPEN_NOTIFY';
+export const openNotify = createAction(OPEN_NOTIFY);
+export const CLOSE_NOTIFY = 'CLOSE_NOTIFY';
+export const closeNotify = createAction(CLOSE_NOTIFY);

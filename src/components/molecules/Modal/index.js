@@ -6,12 +6,11 @@ import Modal from '@material-ui/core/Modal';
 const styles = theme => ({
   paper: {
     position: 'absolute',
-    width: theme.spacing.unit * 50,
     backgroundColor: 'initial',
     boxShadow: theme.shadows[5],
     padding: 0,
-    marginLeft: 'calc((100% - 400px) /2)',
-    marginTop: '50px'
+    marginLeft: 'calc((100% - 300px) /2)',
+    marginTop: '5px'
   }
 });
 

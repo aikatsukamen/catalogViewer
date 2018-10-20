@@ -1,5 +1,5 @@
 import { combineReducers } from 'redux';
-import { REQUEST_LIST, SUCCESS_LIST, FAILURE_LIST, SHOW_CIRCLE_DETAIL, CLOSE_CIRCLE_DETAIL, CHANGE_FAVORITE_ID, DELETE_FAVORITE_CIRCLE, APPLY_SEARCH_LIST, APPLY_LOAD_DATA } from '../actions';
+import { OPEN_NOTIFY, CLOSE_NOTIFY, REQUEST_LIST, SUCCESS_LIST, FAILURE_LIST, SHOW_CIRCLE_DETAIL, CLOSE_CIRCLE_DETAIL, CHANGE_FAVORITE_ID, DELETE_FAVORITE_CIRCLE, APPLY_SEARCH_LIST, APPLY_LOAD_DATA } from '../actions';
 
 const initial = {
   status: 'init',
@@ -101,6 +101,12 @@ const reducer = (state = initial, action) => {
     // 検索結果を反映
     case APPLY_SEARCH_LIST: {
       return { ...state, searchResult: action.payload };
+    }
+    case OPEN_NOTIFY: {
+      return { ...state, notify: { ...action.payload, isOpen: true } };
+    }
+    case CLOSE_NOTIFY: {
+      return { ...state, notify: { isOpen: false, message: '', variant: 'info' } };
     }
     default:
       return state;

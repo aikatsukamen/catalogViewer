@@ -6,7 +6,7 @@ import { connect } from 'react-redux';
 import { withStyles } from '@material-ui/core/styles';
 import Button from '@material-ui/core/Button';
 import './App.css';
-import { showCircleDetail, closeCircleDetail, changeFavoriteId, deleteFavoriteCircle, searchCircle, saveData } from '../../actions';
+import { showCircleDetail, closeCircleDetail, changeFavoriteId, deleteFavoriteCircle, searchCircle, saveData, closeNotify } from '../../actions';
 import DrawerMenu from '../molecules/DrawerMenu';
 import MenuItems from '../molecules/MenuItems';
 import CircleMap from '../organisms/CircleMap';
@@ -14,6 +14,7 @@ import CircleDetail from '../molecules/CircleDetail';
 import Modal from '../molecules/Modal';
 import FavoriteList from '../organisms/FavoriteList';
 import CircleSearch from '../organisms/Search';
+import Snackbar from '../molecules/SnackBar';
 
 const styles = theme => ({
   button: {
@@ -38,8 +39,6 @@ const App = props => {
     </div>
   );
 
-  console.log(`${process.env.PUBLIC_URL}/favorite`);
-
   return (
     <div>
       <BrowserRouter>
@@ -55,6 +54,7 @@ const App = props => {
           <Modal open={props.detailCircle.open} modalClose={props.closeCircleDetail}>
             <CircleDetail circleInfo={props.detailCircle.circleInfo} favorite={props.favorite} changeFavoriteId={props.changeFavoriteId} />
           </Modal>
+          <Snackbar open={props.notify.isOpen} message={props.notify.message} variant={props.notify.variant} onClose={props.closeNotify} />
         </div>
       </BrowserRouter>
     </div>
@@ -69,7 +69,8 @@ function mapStateToProps(state) {
     favorite: state.reducer.favorite,
     circleInfo: state.reducer.circleInfo,
     detailCircle: state.reducer.detailCircle,
-    searchResult: state.reducer.searchResult
+    searchResult: state.reducer.searchResult,
+    notify: state.reducer.notify
   };
 }
 
@@ -80,7 +81,8 @@ const mapDispatchToProps = {
   changeFavoriteId,
   deleteFavoriteCircle,
   searchCircle,
-  saveData
+  saveData,
+  closeNotify
 };
 
 App.propTypes = {
@@ -96,7 +98,9 @@ App.propTypes = {
   deleteFavoriteCircle: PropTypes.func.isRequired,
   searchResult: PropTypes.array.isRequired,
   searchCircle: PropTypes.func.isRequired,
-  saveData: PropTypes.func
+  saveData: PropTypes.func,
+  notify: PropTypes.object.isRequired,
+  closeNotify: PropTypes.func.isRequired
 };
 
 export default connect(

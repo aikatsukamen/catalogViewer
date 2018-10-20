@@ -1,16 +1,25 @@
 import { call, put, fork, take, select, takeEvery } from 'redux-saga/effects';
-import { REQUEST_LIST, successList, failureList, applyLoadData, SAVE_DATA, SEARCH_CIRCLE, applySearchList } from '../actions';
+import { REQUEST_LIST, successList, failureList, applyLoadData, SAVE_DATA, SEARCH_CIRCLE, applySearchList, openNotify, closeNotify } from '../actions';
 import API from '../api';
 
 function* handleGetList(action) {
   try {
+    yield put(closeNotify());
+    yield put(openNotify({ message: 'サークル配置を取得しています。', variant: 'info' }));
     const mapResult = yield call(API.getCicleMap);
     if (mapResult.error) throw mapResult.error;
+
+    yield put(closeNotify());
+    yield put(openNotify({ message: 'サークル情報を取得しています。', variant: 'info' }));
     const circleInfoResult = yield call(API.getCicleInfo);
     if (circleInfoResult.error) throw circleInfoResult.error;
 
     yield put(successList({ map: mapResult.data, circleInfo: circleInfoResult.data }));
+    yield put(closeNotify());
+    yield put(openNotify({ message: '取得完了しました。', variant: 'success' }));
   } catch (error) {
+    yield put(closeNotify());
+    yield put(openNotify({ message: 'なんかエラーになりました', variant: 'error' }));
     yield put(failureList({ error }));
   }
 }
@@ -26,8 +35,15 @@ function* handleLoad() {
 
 // stateからローカルストレージに書き込む
 function* handleSave(action) {
-  const state = yield select();
-  localStorage.setItem('data', JSON.stringify(state.reducer));
+  try {
+    const state = yield select();
+    localStorage.setItem('data', JSON.stringify(state.reducer));
+    yield put(closeNotify());
+    yield put(openNotify({ message: 'データを保存しました。', variant: 'success' }));
+  } catch (e) {
+    yield put(closeNotify());
+    yield put(openNotify({ message: 'データ保存でエラーがありました。', variant: 'error' }));
+  }
 }
 
 // 検索するよ
