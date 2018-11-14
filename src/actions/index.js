@@ -49,3 +49,16 @@ export const OPEN_NOTIFY = 'OPEN_NOTIFY';
 export const openNotify = createAction(OPEN_NOTIFY);
 export const CLOSE_NOTIFY = 'CLOSE_NOTIFY';
 export const closeNotify = createAction(CLOSE_NOTIFY);
+
+// ログイン
+export const LOGIN = 'LOGIN';
+export const login = createAction(LOGIN);
+export const CHECK_USER = 'CHECK_USER';
+export const checkUser = createAction(CHECK_USER);
+export const LOGIN_DONE = 'LOGIN_DONE';
+export const loginDone = createAction(LOGIN_DONE);
+
+export const SYNC_LOAD = 'SYNC_LOAD';
+export const syncLoad = createAction(SYNC_LOAD);
+export const SYNC_SAVE = 'SYNC_SAVE';
+export const syncSave = createAction(SYNC_SAVE);

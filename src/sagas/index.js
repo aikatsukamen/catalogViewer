@@ -1,8 +1,11 @@
-import { call, put, fork, take, select, takeEvery } from 'redux-saga/effects';
-import { REQUEST_LIST, successList, failureList, applyLoadData, SAVE_DATA, SEARCH_CIRCLE, SEARCH_KKT, applySearchList, openNotify, closeNotify, SEARCH_TO_FAVORITE, changeFavoriteId, changeSearchToFavoriteId } from '../actions';
+import { call, put, select, takeEvery } from 'redux-saga/effects';
+import { REQUEST_LIST, successList, failureList, applyLoadData, SAVE_DATA, SEARCH_CIRCLE, SEARCH_KKT, applySearchList, openNotify, closeNotify, SEARCH_TO_FAVORITE, changeFavoriteId, changeSearchToFavoriteId, LOGIN, loginDone, SYNC_LOAD, SYNC_SAVE } from '../actions';
 import API from '../api';
 
-function* handleGetList(action) {
+/**
+ * サークル情報、配置図を取得
+ */
+function* handleGetList() {
   try {
     yield put(closeNotify());
     yield put(openNotify({ message: 'サークル配置を取得しています。', variant: 'info' }));
@@ -15,6 +18,8 @@ function* handleGetList(action) {
     if (circleInfoResult.error) throw circleInfoResult.error;
 
     yield put(successList({ map: mapResult.data, circleInfo: circleInfoResult.data }));
+    yield call(handleSave);
+
     yield put(closeNotify());
     yield put(openNotify({ message: '取得完了しました。', variant: 'success' }));
   } catch (error) {
@@ -25,7 +30,7 @@ function* handleGetList(action) {
 }
 
 // ローカルストレージからstateに読み込む
-function* handleLoad() {
+function* handleLoadLocalStorage() {
   const data = localStorage.getItem('data');
   if (data) {
     const payload = JSON.parse(data);
@@ -34,19 +39,19 @@ function* handleLoad() {
 }
 
 // stateからローカルストレージに書き込む
-function* handleSave(action) {
+function* handleSave() {
   try {
     const state = yield select();
     localStorage.setItem('data', JSON.stringify(state.reducer));
-    yield put(closeNotify());
-    yield put(openNotify({ message: 'データを保存しました。', variant: 'success' }));
   } catch (e) {
-    yield put(closeNotify());
-    yield put(openNotify({ message: 'データ保存でエラーがありました。', variant: 'error' }));
+    // 特に何もしない
   }
 }
 
-// 検索するよ
+/**
+ * 検索ワードを元に、サークルを検索
+ * @param {*} action
+ */
 function* handleSearchCircle(action) {
   const state = yield select();
   const searchResult = [];
@@ -69,8 +74,10 @@ function* handleSearchCircle(action) {
   yield put(applySearchList(searchResult));
 }
 
-// 検索するよ
-function* handleSearchKkt(action) {
+/**
+ * KKTのサークルを検索
+ */
+function* handleSearchKkt() {
   const state = yield select();
   const searchResult = [];
 
@@ -87,6 +94,10 @@ function* handleSearchKkt(action) {
   yield put(applySearchList(searchResult));
 }
 
+/**
+ * 検索結果をまとめてお気に入り
+ * @param {*} action
+ */
 function* handleSearchToFavorite(action) {
   const state = yield select();
   const id = action.payload;
@@ -97,12 +108,117 @@ function* handleSearchToFavorite(action) {
   yield put(changeSearchToFavoriteId(id));
 }
 
+/**
+ * 初期処理
+ */
+function* initialProcess() {
+  const state = yield select();
+  if (state.reducer.circleInfo.length === 0) {
+    yield call(handleGetList);
+  }
+}
+
+function* handleLogin(action) {
+  const { loginType, user, pass } = action.payload;
+  const state = yield select();
+
+  try {
+    switch (loginType) {
+      case 'regist': {
+        // ユーザの存在チェック
+        const checkResult = yield call(API.checkExistUser, user, state.reducer.eventName);
+        if (checkResult.error) throw checkResult.error;
+
+        // 登録API叩く
+        const saveData = JSON.stringify({
+          favorite: state.reducer.favorite
+        });
+        const saveResult = yield call(API.saveData, user, state.reducer.eventName, pass, saveData);
+        if (saveResult.error) throw saveResult.error;
+
+        // ログイン情報をstateに反映
+        yield put(loginDone({ user: action.payload.user, pass: action.payload.pass }));
+
+        yield put(closeNotify());
+        yield put(openNotify({ message: 'サーバにデータをセーブしました。', variant: 'success' }));
+        break;
+      }
+      case 'login': {
+        // データを取得する
+        const getResult = yield call(API.getUserData, user, state.reducer.eventName, pass);
+        if (getResult.error) throw getResult.error;
+
+        // ログインだけするので、stateへの反映はここではしない
+        // yield put(applyLoadData(getResult.data));
+
+        yield put(closeNotify());
+        yield put(openNotify({ message: 'ログインしました。', variant: 'success' }));
+        break;
+      }
+      default:
+        break;
+    }
+    yield call(handleSave);
+  } catch (e) {
+    yield put(closeNotify());
+    console.log(e);
+    const message = e.error || e.message;
+    yield put(openNotify({ message: message, variant: 'error' }));
+  }
+}
+
+/**
+ * サーバからロード
+ */
+function* handleSyncLoad() {
+  const state = yield select();
+  try {
+    const getResult = yield call(API.getUserData, state.reducer.login.user, state.reducer.eventName, state.reducer.login.pass);
+    if (getResult.error) throw getResult.error;
+
+    yield put(applyLoadData(getResult.data));
+    yield call(handleSave);
+    yield put(closeNotify());
+    yield put(openNotify({ message: 'サーバからデータをロードしました。', variant: 'success' }));
+  } catch (e) {
+    yield put(closeNotify());
+    console.log(e);
+    const message = e.error || e.message;
+    yield put(openNotify({ message: message, variant: 'error' }));
+  }
+}
+
+/**
+ * サーバにセーブ
+ */
+function* handleSyncSave() {
+  const state = yield select();
+  try {
+    const saveData = JSON.stringify({
+      favorite: state.reducer.favorite
+    });
+    const saveResult = yield call(API.saveData, state.reducer.login.user, state.reducer.eventName, state.reducer.login.pass, saveData);
+    if (saveResult.error) throw saveResult.error;
+
+    yield put(closeNotify());
+    yield put(openNotify({ message: 'サーバにデータをセーブしました。', variant: 'success' }));
+  } catch (e) {
+    yield put(closeNotify());
+    console.log(e);
+    const message = e.error || e.message;
+    yield put(openNotify({ message: message, variant: 'error' }));
+  }
+}
+
 export default function* rootSaga() {
-  yield call(handleLoad);
+  yield call(handleLoadLocalStorage);
   yield takeEvery(REQUEST_LIST, handleGetList);
   yield takeEvery(SAVE_DATA, handleSave);
   yield takeEvery(SEARCH_CIRCLE, handleSearchCircle);
   yield takeEvery(SEARCH_KKT, handleSearchKkt);
   yield takeEvery(SEARCH_TO_FAVORITE, handleSearchToFavorite);
-  yield call(handleGetList);
+  yield takeEvery(LOGIN, handleLogin);
+  yield takeEvery(SYNC_LOAD, handleSyncLoad);
+  yield takeEvery(SYNC_SAVE, handleSyncSave);
+  yield call(initialProcess);
 }

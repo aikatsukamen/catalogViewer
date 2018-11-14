@@ -9,7 +9,7 @@ import IconButton from '@material-ui/core/IconButton';
 import Divider from '@material-ui/core/Divider';
 import MenuIcon from '@material-ui/icons/Menu';
 
-const styles = theme => ({});
+const styles = () => ({});
 
 class ResponsiveDrawer extends React.Component {
   constructor() {
@@ -34,7 +34,7 @@ class ResponsiveDrawer extends React.Component {
   }
 
   render() {
-    const { classes, theme } = this.props;
+    const { classes } = this.props;
 
     return (
       <div className={classes.root}>
@@ -43,7 +43,7 @@ class ResponsiveDrawer extends React.Component {
             <IconButton color="inherit" onClick={this.handleOpen}>
               <MenuIcon />
             </IconButton>
-            <Typography variant="headline" color="inherit" noWrap>
+            <Typography variant="h6" color="inherit" noWrap>
               {this.props.navigationLabel}
             </Typography>
           </Toolbar>

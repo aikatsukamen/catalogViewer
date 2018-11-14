@@ -16,7 +16,7 @@ import MenuItem from '@material-ui/core/MenuItem';
 import LinkIcon from '@material-ui/icons/Link';
 import FavoriteIcon from '@material-ui/icons/Favorite';
 
-const styles = theme => ({
+const styles = () => ({
   card: {
     width: '300px'
   },
@@ -112,35 +112,37 @@ const CircleDetail = props => {
       />
       <CardMedia className={classes.media} image={props.circleInfo.circleCutImage} title={props.circleInfo.circleName} />
       <CardContent>
-        <Typography component="p">{props.circleInfo.genre}</Typography>
+        <Typography variant="body1" component="p">
+          {props.circleInfo.genre}
+        </Typography>
       </CardContent>
       <CardActions>
         <div className={classes.actions}>
           <Divider />
           {/* Twitter */}
           <div className={twitterClassnames}>
-            <a href={props.circleInfo.twitter} target="_blank">
-              <img src="./images/social_twitter.png" className={props.classes.socialImage} />
+            <a href={props.circleInfo.twitter} target="_blank" rel="noopener noreferrer">
+              <img src="./images/social_twitter.png" alt="twitter icon" className={props.classes.socialImage} />
             </a>
             {twitterId}
           </div>
           {/* Pixiv */}
           <div className={pixivClassnames}>
-            <a href={props.circleInfo.pixiv} target="_blank">
-              <img src="./images/social_pixiv.jpg" className={props.classes.socialImage} />
+            <a href={props.circleInfo.pixiv} target="_blank" rel="noopener noreferrer">
+              <img src="./images/social_pixiv.jpg" alt="pixiv icon" className={props.classes.socialImage} />
             </a>
             {pixivId}
           </div>
           {/* kkt */}
           <div className={kktClassnames}>
-            <a href={`https://kirakiratter.com/${props.circleInfo.kktId}`} target="_blank">
-              <img src="./images/social_kkt.png" className={props.classes.socialImage} />
+            <a href={`https://kirakiratter.com/${props.circleInfo.kktId}`} target="_blank" rel="noopener noreferrer">
+              <img src="./images/social_kkt.png" alt="kkt icon" className={props.classes.socialImage} />
             </a>
             {props.circleInfo.kktId}
           </div>
           {/* URL */}
           <div className={otherUrlClassnames}>
-            <a href={props.circleInfo.url} target="_blank">
+            <a href={props.circleInfo.url} target="_blank" rel="noopener noreferrer">
               <LinkIcon />
             </a>
             {props.circleInfo.url}
@@ -164,9 +166,9 @@ const CircleDetail = props => {
           <Divider />
           {/* その他参考画像 */}
           <div className={props.classes.additionalImageArea}>
-            <Typography>お品書き画像</Typography>
-            <a href={props.circleInfo.menuImage} target="_blank">
-              <img src={props.circleInfo.menuImage} className={additionalClassnames} />
+            <Typography variant="body1">お品書き画像</Typography>
+            <a href={props.circleInfo.menuImage} target="_blank" rel="noopener noreferrer">
+              <img src={props.circleInfo.menuImage} alt="お品書き画像" className={additionalClassnames} />
             </a>
           </div>
         </div>

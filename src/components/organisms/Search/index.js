@@ -7,7 +7,6 @@ import Divider from '@material-ui/core/Divider';
 import SearchForm from '../../molecules/SearchForm';
 import MenuItem from '@material-ui/core/MenuItem';
 import InputLabel from '@material-ui/core/InputLabel';
-import FavoriteIcon from '@material-ui/icons/Favorite';
 import Select from '@material-ui/core/Select';
 
 const styles = theme => ({

@@ -26,7 +26,7 @@ const FavoriteList = props => {
         const itemProps = {
           avaterLabel: spaceNo,
           primarylabel: matchedCircle[0].circleName,
-          secondarylabel: matchedCircle[0].personName,
+          secondarylabel: matchedCircle[0].person,
           typeColor: favorite.color,
           selectItem: props.selectCircle,
           deleteItem: props.deleteFavoriteCircle
@@ -37,7 +37,7 @@ const FavoriteList = props => {
 
     // 未登録の時
     if (listItems.length === 0) {
-      listItems.push(<Typography variant={'title'}>登録サークルが0件だよ。配置図から登録してみてね。</Typography>);
+      listItems.push(<Typography variant="body1">登録サークルが0件だよ。配置図から登録してみてね。</Typography>);
     }
 
     return listItems;

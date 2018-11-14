@@ -52,7 +52,7 @@ const NavigationMenuItems = () => {
           <ListItemIcon>
             <Cloud />
           </ListItemIcon>
-          <ListItemText primary={'データ保存'} />
+          <ListItemText primary={'SAVE&LOAD'} />
         </ListItem>
       </Link>
     </div>

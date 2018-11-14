@@ -42,10 +42,8 @@ const styles = theme => ({
 
 const CircleMap = props => {
   const onClickCircleSpace = spaceNo => () => {
-    {
-      if (spaceNo.match(/\d/) !== null) {
-        props.selectCircle(spaceNo);
-      }
+    if (spaceNo.match(/\d/) !== null) {
+      props.selectCircle(spaceNo);
     }
   };
 

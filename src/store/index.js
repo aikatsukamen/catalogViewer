@@ -11,7 +11,14 @@ export const history = createHistory();
 export default function configureStore() {
   const sagaMiddleware = createSagaMiddleware();
   const store = createStore(reducer, composeEnhancers(applyMiddleware(sagaMiddleware)));
-  // const store = createStore(reducer, initialState, applyMiddleware(sagaMiddleware));
+  if (module.hot) {
+    // Enable Webpack hot module replacement for reducers
+    module.hot.accept('../reducers', () => {
+      const nextRootReducer = require('../reducers/index');
+      store.replaceReducer(nextRootReducer);
+    });
+  }
+
   sagaMiddleware.run(rootSaga);
   return store;
 }

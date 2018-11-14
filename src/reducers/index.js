@@ -1,13 +1,15 @@
 import { combineReducers } from 'redux';
-import { OPEN_NOTIFY, CLOSE_NOTIFY, REQUEST_LIST, SUCCESS_LIST, FAILURE_LIST, SHOW_CIRCLE_DETAIL, CLOSE_CIRCLE_DETAIL, CHANGE_FAVORITE_ID, DELETE_FAVORITE_CIRCLE, APPLY_SEARCH_LIST, APPLY_LOAD_DATA, CHANGE_SEARCH_TO_FAVORITE_ID } from '../actions';
+import { OPEN_NOTIFY, CLOSE_NOTIFY, REQUEST_LIST, SUCCESS_LIST, FAILURE_LIST, SHOW_CIRCLE_DETAIL, CLOSE_CIRCLE_DETAIL, CHANGE_FAVORITE_ID, DELETE_FAVORITE_CIRCLE, APPLY_SEARCH_LIST, APPLY_LOAD_DATA, CHANGE_SEARCH_TO_FAVORITE_ID, LOGIN_DONE } from '../actions';
 
 const initial = {
   status: 'init',
   error: false,
+  eventName: '芸カ17',
   // サークル配置
   map: [],
   // サークル情報
   circleInfo: [],
+  // 検索結果をまとめてお気に入りにする時のお気に入りID
   searchToFavoriteId: '-1',
   // お気に入りリスト
   favorite: [
@@ -30,6 +32,11 @@ const initial = {
   },
   // 購入リスト
   purchase: [],
+  // ログイン情報
+  login: {
+    user: '',
+    pass: ''
+  },
   // 通知欄
   notify: {
     open: false,
@@ -50,12 +57,20 @@ const reducer = (state = initial, action) => {
       return { ...state, status: 'done', error: true };
     }
     case APPLY_LOAD_DATA: {
-      console.log(action.payload);
       return { ...state, ...action.payload };
     }
+    // スペース番号を元に、サークル情報を詳細表示
     case SHOW_CIRCLE_DETAIL: {
       const matchedCircle = state.circleInfo.filter(circle => {
-        return circle.spaceNo.indexOf(action.payload) > -1;
+        if (circle.spaceNo.indexOf('.') > -1) {
+          // 合体スペースの時はスペース番号を分割して判定
+          // ア11.12 なら、[ア11, ア12]に整形する
+          const spaceNoList = circle.spaceNo.split('.');
+          spaceNoList[1] = spaceNoList[0].slice(0, 1) + spaceNoList[1];
+          return spaceNoList.indexOf(action.payload) > -1;
+        } else {
+          return circle.spaceNo.indexOf(action.payload) > -1;
+        }
       });
 
       if (matchedCircle.length !== 0) {
@@ -76,6 +91,7 @@ const reducer = (state = initial, action) => {
       for (let i = 0; i < newFavorite.length; i++) {
         newFavorite[i].spaceNo.some((value, index) => {
           if (value === spaceNo) newFavorite[i].spaceNo.splice(index, 1);
+          return true;
         });
       }
 
@@ -88,6 +104,7 @@ const reducer = (state = initial, action) => {
 
       return { ...state, favorite: newFavorite };
     }
+    // お気に入りサークルを削除
     case DELETE_FAVORITE_CIRCLE: {
       const spaceNo = action.payload;
       let newFavorite = [...state.favorite];
@@ -95,6 +112,7 @@ const reducer = (state = initial, action) => {
       for (let i = 0; i < newFavorite.length; i++) {
         newFavorite[i].spaceNo.some((value, index) => {
           if (value === spaceNo) newFavorite[i].spaceNo.splice(index, 1);
+          return true;
         });
       }
       return { ...state, favorite: newFavorite };
@@ -106,6 +124,12 @@ const reducer = (state = initial, action) => {
     case APPLY_SEARCH_LIST: {
       return { ...state, searchResult: action.payload };
     }
+    // 検索結果を反映
+    case LOGIN_DONE: {
+      return { ...state, login: action.payload };
+    }
+
+    // 通知
     case OPEN_NOTIFY: {
       return { ...state, notify: { ...action.payload, isOpen: true } };
     }
