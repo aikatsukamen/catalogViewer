@@ -149,7 +149,7 @@ function* handleLogin(action) {
         if (getResult.error) throw getResult.error;
 
         // ログインだけするので、stateへの反映はここではしない
-        // yield put(applyLoadData(getResult.data));
+        yield put(loginDone({ user: action.payload.user, pass: action.payload.pass }));
 
         yield put(closeNotify());
         yield put(openNotify({ message: 'ログインしました。', variant: 'success' }));
@@ -158,6 +158,7 @@ function* handleLogin(action) {
       default:
         break;
     }
+    // localstorageに保存
     yield call(handleSave);
   } catch (e) {
     yield put(closeNotify());
@@ -175,6 +176,7 @@ function* handleSyncLoad() {
   try {
     const getResult = yield call(API.getUserData, state.reducer.login.user, state.reducer.eventName, state.reducer.login.pass);
     if (getResult.error) throw getResult.error;
+    console.log(getResult.data);
 
     yield put(applyLoadData(getResult.data));
     yield call(handleSave);
