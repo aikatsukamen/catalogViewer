@@ -4,11 +4,15 @@ import { withStyles } from '@material-ui/core/styles';
 import List from '@material-ui/core/List';
 import CardItem from '../../molecules/CardItem';
 import Typography from '@material-ui/core/Typography';
+import { Divider } from '@material-ui/core';
 
 const styles = theme => ({
   root: {
     width: '100%',
     backgroundColor: theme.palette.background.paper
+  },
+  header: {
+    height: '30px'
   }
 });
 
@@ -37,7 +41,7 @@ const FavoriteList = props => {
 
     // 未登録の時
     if (listItems.length === 0) {
-      listItems.push(<Typography variant="body1">登録サークルが0件だよ。配置図から登録してみてね。</Typography>);
+      return <Typography variant="body1">登録サークルが0件だよ。配置図から登録してみてね。</Typography>;
     }
 
     return listItems;
@@ -45,6 +49,10 @@ const FavoriteList = props => {
 
   return (
     <div className={classes.root}>
+      <Typography variant="body1" gutterBottom={true}>
+        お気に入りに登録したサークルを表示するよ
+      </Typography>
+      <Divider />
       <List>{createFavoriteItem(props.favorite)}</List>
     </div>
   );

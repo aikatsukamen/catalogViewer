@@ -1,5 +1,26 @@
 import { call, put, select, takeEvery } from 'redux-saga/effects';
-import { REQUEST_LIST, successList, failureList, applyLoadData, SAVE_DATA, SEARCH_CIRCLE, SEARCH_KKT, applySearchList, openNotify, closeNotify, SEARCH_TO_FAVORITE, changeFavoriteId, changeSearchToFavoriteId, LOGIN, loginDone, SYNC_LOAD, SYNC_SAVE } from '../actions';
+import {
+  REQUEST_LIST,
+  successList,
+  failureList,
+  applyLoadData,
+  SAVE_DATA,
+  SEARCH_CIRCLE,
+  SEARCH_KKT,
+  applySearchList,
+  openNotify,
+  closeNotify,
+  SEARCH_TO_FAVORITE,
+  changeFavoriteId,
+  changeSearchToFavoriteId,
+  LOGIN,
+  loginDone,
+  SYNC_LOAD,
+  SYNC_SAVE,
+  CHANGE_FAVORITE_ID,
+  LOGOUT,
+  logoutDone
+} from '../actions';
 import API from '../api';
 
 /**
@@ -42,7 +63,14 @@ function* handleLoadLocalStorage() {
 function* handleSave() {
   try {
     const state = yield select();
-    localStorage.setItem('data', JSON.stringify(state.reducer));
+    const saveData = {
+      map: state.reducer.map,
+      circleInfo: state.reducer.circleInfo,
+      favorite: state.reducer.favorite,
+      purchase: state.reducer.purchase,
+      login: state.reducer.login
+    };
+    localStorage.setItem('data', JSON.stringify(saveData));
   } catch (e) {
     // 特に何もしない
   }
@@ -105,6 +133,9 @@ function* handleSearchToFavorite(action) {
   for (const spaceNo of state.reducer.searchResult) {
     yield put(changeFavoriteId({ spaceNo, id }));
   }
+
+  // localstorageに保存
+  yield call(handleSave);
   yield put(changeSearchToFavoriteId(id));
 }
 
@@ -118,6 +149,10 @@ function* initialProcess() {
   }
 }
 
+/**
+ * ログイン、新規登録
+ * @param {object} action
+ */
 function* handleLogin(action) {
   const { loginType, user, pass } = action.payload;
   const state = yield select();
@@ -126,25 +161,19 @@ function* handleLogin(action) {
     switch (loginType) {
       case 'regist': {
         // ユーザの存在チェック
+        yield put(closeNotify());
+        yield put(openNotify({ message: '登録可能なユーザかチェックしています。', variant: 'info' }));
         const checkResult = yield call(API.checkExistUser, user, state.reducer.eventName);
         if (checkResult.error) throw checkResult.error;
 
         // 登録API叩く
-        const saveData = JSON.stringify({
-          favorite: state.reducer.favorite
-        });
-        const saveResult = yield call(API.saveData, user, state.reducer.eventName, pass, saveData);
-        if (saveResult.error) throw saveResult.error;
-
-        // ログイン情報をstateに反映
-        yield put(loginDone({ user: action.payload.user, pass: action.payload.pass }));
-
-        yield put(closeNotify());
-        yield put(openNotify({ message: 'サーバにデータをセーブしました。', variant: 'success' }));
+        yield call(handleSyncSave());
         break;
       }
       case 'login': {
         // データを取得する
+        yield put(closeNotify());
+        yield put(openNotify({ message: 'ログインしています・・・', variant: 'info' }));
         const getResult = yield call(API.getUserData, user, state.reducer.eventName, pass);
         if (getResult.error) throw getResult.error;
 
@@ -174,6 +203,8 @@ function* handleLogin(action) {
 function* handleSyncLoad() {
   const state = yield select();
   try {
+    yield put(closeNotify());
+    yield put(openNotify({ message: 'サーバからデータをダウンロードしています。', variant: 'info' }));
     const getResult = yield call(API.getUserData, state.reducer.login.user, state.reducer.eventName, state.reducer.login.pass);
     if (getResult.error) throw getResult.error;
     console.log(getResult.data);
@@ -181,7 +212,7 @@ function* handleSyncLoad() {
     yield put(applyLoadData(getResult.data));
     yield call(handleSave);
     yield put(closeNotify());
-    yield put(openNotify({ message: 'サーバからデータをロードしました。', variant: 'success' }));
+    yield put(openNotify({ message: 'ダウンロード完了', variant: 'success' }));
   } catch (e) {
     yield put(closeNotify());
     console.log(e);
@@ -196,6 +227,8 @@ function* handleSyncLoad() {
 function* handleSyncSave() {
   const state = yield select();
   try {
+    yield put(closeNotify());
+    yield put(openNotify({ message: 'サーバにデータをアップロードしています', variant: 'info' }));
     const saveData = JSON.stringify({
       favorite: state.reducer.favorite
     });
@@ -203,12 +236,30 @@ function* handleSyncSave() {
     if (saveResult.error) throw saveResult.error;
 
     yield put(closeNotify());
-    yield put(openNotify({ message: 'サーバにデータをセーブしました。', variant: 'success' }));
+    yield put(openNotify({ message: 'アップロード完了', variant: 'success' }));
   } catch (e) {
     yield put(closeNotify());
     console.log(e);
     const message = e.error || e.message;
     yield put(openNotify({ message: message, variant: 'error' }));
+  }
+}
+
+/**
+ * お気に入り処理
+ * ※Reducerも発火してる
+ */
+function* handleChangeFavarite(action) {
+  yield call(handleSave);
+}
+
+function* handleLogout() {
+  if (window.confirm('ログアウトしますか？')) {
+    yield put(logoutDone());
+    yield call(handleSave);
+
+    yield put(closeNotify());
+    yield put(openNotify({ message: 'ログアウトしました。', variant: 'info' }));
   }
 }
 
@@ -220,7 +271,10 @@ export default function* rootSaga() {
   yield takeEvery(SEARCH_KKT, handleSearchKkt);
   yield takeEvery(SEARCH_TO_FAVORITE, handleSearchToFavorite);
   yield takeEvery(LOGIN, handleLogin);
+  yield takeEvery(LOGOUT, handleLogout);
   yield takeEvery(SYNC_LOAD, handleSyncLoad);
   yield takeEvery(SYNC_SAVE, handleSyncSave);
+
+  yield takeEvery(CHANGE_FAVORITE_ID, handleChangeFavarite);
   yield call(initialProcess);
 }

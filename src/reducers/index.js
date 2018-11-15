@@ -1,5 +1,5 @@
 import { combineReducers } from 'redux';
-import { OPEN_NOTIFY, CLOSE_NOTIFY, REQUEST_LIST, SUCCESS_LIST, FAILURE_LIST, SHOW_CIRCLE_DETAIL, CLOSE_CIRCLE_DETAIL, CHANGE_FAVORITE_ID, DELETE_FAVORITE_CIRCLE, APPLY_SEARCH_LIST, APPLY_LOAD_DATA, CHANGE_SEARCH_TO_FAVORITE_ID, LOGIN_DONE } from '../actions';
+import { OPEN_NOTIFY, CLOSE_NOTIFY, REQUEST_LIST, SUCCESS_LIST, FAILURE_LIST, SHOW_CIRCLE_DETAIL, CLOSE_CIRCLE_DETAIL, CHANGE_FAVORITE_ID, DELETE_FAVORITE_CIRCLE, APPLY_SEARCH_LIST, APPLY_LOAD_DATA, CHANGE_SEARCH_TO_FAVORITE_ID, LOGIN_DONE, LOGOUT_DONE } from '../actions';
 
 const initial = {
   status: 'init',
@@ -39,8 +39,8 @@ const initial = {
   },
   // 通知欄
   notify: {
-    open: false,
-    type: 'info',
+    isOpen: false,
+    variant: 'info',
     message: ''
   }
 };
@@ -61,17 +61,26 @@ const reducer = (state = initial, action) => {
     }
     // スペース番号を元に、サークル情報を詳細表示
     case SHOW_CIRCLE_DETAIL: {
-      const matchedCircle = state.circleInfo.filter(circle => {
-        if (circle.spaceNo.indexOf('.') > -1) {
-          // 合体スペースの時はスペース番号を分割して判定
-          // ア11.12 なら、[ア11, ア12]に整形する
-          const spaceNoList = circle.spaceNo.split('.');
-          spaceNoList[1] = spaceNoList[0].slice(0, 1) + spaceNoList[1];
-          return spaceNoList.indexOf(action.payload) > -1;
-        } else {
+      let matchedCircle = [];
+      if (action.payload.indexOf('.') > -1) {
+        // 合体スペースを指定された時は、そのままリストから探す
+        matchedCircle = state.circleInfo.filter(circle => {
           return circle.spaceNo.indexOf(action.payload) > -1;
-        }
-      });
+        });
+      } else {
+        // 単一スペースを指定された時は、リストの合体されてるやつを分割して探す
+        matchedCircle = state.circleInfo.filter(circle => {
+          if (circle.spaceNo.indexOf('.') > -1) {
+            // 合体スペースの時はスペース番号を分割して判定
+            // ア11.12 なら、[ア11, ア12]に整形する
+            const spaceNoList = circle.spaceNo.split('.');
+            spaceNoList[1] = spaceNoList[0].slice(0, 1) + spaceNoList[1];
+            return spaceNoList.indexOf(action.payload) > -1;
+          } else {
+            return circle.spaceNo.indexOf(action.payload) > -1;
+          }
+        });
+      }
 
       if (matchedCircle.length !== 0) {
         return { ...state, detailCircle: { open: true, circleInfo: matchedCircle[0] } };
@@ -124,9 +133,13 @@ const reducer = (state = initial, action) => {
     case APPLY_SEARCH_LIST: {
       return { ...state, searchResult: action.payload };
     }
-    // 検索結果を反映
+    // ログイン
     case LOGIN_DONE: {
       return { ...state, login: action.payload };
+    }
+    // ログアウト
+    case LOGOUT_DONE: {
+      return { ...state, login: { user: '', pass: '' } };
     }
 
     // 通知

@@ -4,12 +4,24 @@ import { withStyles } from '@material-ui/core/styles';
 import TextField from '@material-ui/core/TextField';
 import Button from '@material-ui/core/Button';
 import Typography from '@material-ui/core/Typography';
+import Divider from '@material-ui/core/Divider';
+import CloudDownloadIcon from '@material-ui/icons/CloudDownload';
+import CloudUploadIcon from '@material-ui/icons/CloudUpload';
 
 const styles = theme => ({
   root: {
     width: '100%',
     backgroundColor: theme.palette.background.paper,
     padding: '5px'
+  },
+  button: {
+    marginRight: '20px'
+  },
+  controlArea: {
+    marginTop: '10px'
+  },
+  logoutArea: {
+    marginTop: '40px'
   }
 });
 
@@ -47,10 +59,10 @@ class Sync extends React.Component {
   initForm() {
     return (
       <div>
-        <Button variant="contained" color="default" onClick={this.handleShowLoginForm}>
+        <Button variant="contained" color="default" onClick={this.handleShowLoginForm} className={this.props.classes.button}>
           ログイン
         </Button>
-        <Button variant="contained" color="primary" onClick={this.handleShowRegistForm}>
+        <Button variant="contained" color="default" onClick={this.handleShowRegistForm}>
           新規登録
         </Button>
       </div>
@@ -79,7 +91,7 @@ class Sync extends React.Component {
           <div>
             <TextField label={'パスワード'} type="password" value={this.state.pass} onChange={this.handleChange('pass')} />
           </div>
-          <div>
+          <div className={this.props.classes.controlArea}>
             <Button
               variant="contained"
               color="primary"
@@ -113,27 +125,44 @@ class Sync extends React.Component {
             }}
           />
         </div>
-        <div>
-          <Button variant="contained" color="default" onClick={this.props.loadData}>
-            LOAD
+        <div className={this.props.classes.controlArea}>
+          <Button variant="contained" color="primary" onClick={this.props.loadData} className={this.props.classes.button}>
+            <CloudDownloadIcon />
+            Download
           </Button>
-          <Button variant="contained" color="primary" onClick={this.props.saveData}>
-            SAVE
+          <Button variant="contained" color="secondary" onClick={this.props.saveData}>
+            <CloudUploadIcon />
+            Upload
+          </Button>
+        </div>
+        <div className={this.props.classes.logoutArea}>
+          <Button variant="contained" color="default" size="small" onClick={this.props.logout}>
+            ログアウト
           </Button>
         </div>
       </div>
     );
   }
 
-  UNSAFE_componentWillReceiveProps() {
-    if (this.props.loginInfo.user) {
+  UNSAFE_componentWillReceiveProps(nextProps) {
+    if (nextProps.loginInfo.user !== '') {
+      // ログイン時の挙動
       this.setState({ mode: 'logined' });
+    } else {
+      // ログアウト時の挙動
+      if (this.state.mode === 'logined') {
+        this.setState({ mode: 'init', user: '', pass: '' });
+      }
     }
   }
 
   render() {
     return (
       <div className={this.props.classes.root}>
+        <Typography variant="body1" gutterBottom={true}>
+          お気に入り情報をサーバに保存できるよ！
+        </Typography>
+        <Divider />
         {(() => {
           switch (this.state.mode) {
             case 'init':
@@ -157,6 +186,7 @@ Sync.propTypes = {
   classes: PropTypes.object.isRequired,
   loginInfo: PropTypes.object.isRequired,
   login: PropTypes.func.isRequired,
+  logout: PropTypes.func.isRequired,
   checkUser: PropTypes.func.isRequired,
   saveData: PropTypes.func.isRequired,
   loadData: PropTypes.func.isRequired

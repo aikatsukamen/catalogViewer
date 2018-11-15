@@ -8,6 +8,7 @@ import SearchForm from '../../molecules/SearchForm';
 import MenuItem from '@material-ui/core/MenuItem';
 import InputLabel from '@material-ui/core/InputLabel';
 import Select from '@material-ui/core/Select';
+import Typography from '@material-ui/core/Typography';
 
 const styles = theme => ({
   root: {
@@ -50,6 +51,10 @@ const Search = props => {
 
   return (
     <div className={classes.root}>
+      <Typography variant="body1" gutterBottom={true}>
+        サークルを検索するよ
+      </Typography>
+      <Divider />
       {/* 検索入力 */}
       <SearchForm searchCircle={props.searchCircle} searchKkt={props.searchKkt} />
       <Divider />

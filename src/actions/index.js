@@ -53,10 +53,15 @@ export const closeNotify = createAction(CLOSE_NOTIFY);
 // ログイン
 export const LOGIN = 'LOGIN';
 export const login = createAction(LOGIN);
-export const CHECK_USER = 'CHECK_USER';
-export const checkUser = createAction(CHECK_USER);
 export const LOGIN_DONE = 'LOGIN_DONE';
 export const loginDone = createAction(LOGIN_DONE);
+export const LOGOUT = 'LOGOUT';
+export const logout = createAction(LOGOUT);
+export const LOGOUT_DONE = 'LOGOUT_DONE';
+export const logoutDone = createAction(LOGOUT_DONE);
+
+export const CHECK_USER = 'CHECK_USER';
+export const checkUser = createAction(CHECK_USER);
 
 export const SYNC_LOAD = 'SYNC_LOAD';
 export const syncLoad = createAction(SYNC_LOAD);

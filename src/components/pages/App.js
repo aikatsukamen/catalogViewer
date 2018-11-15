@@ -5,7 +5,7 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { withStyles } from '@material-ui/core/styles';
 import './App.css';
-import { requestList, showCircleDetail, closeCircleDetail, changeFavoriteId, deleteFavoriteCircle, searchCircle, saveData, closeNotify, searchKkt, searchToFavorite, checkUser, login, syncLoad, syncSave } from '../../actions';
+import { requestList, showCircleDetail, closeCircleDetail, changeFavoriteId, deleteFavoriteCircle, searchCircle, saveData, closeNotify, searchKkt, searchToFavorite, checkUser, login, logout, syncLoad, syncSave } from '../../actions';
 import DrawerMenu from '../molecules/DrawerMenu';
 import MenuItems from '../molecules/MenuItems';
 import CircleMap from '../organisms/CircleMap';
@@ -67,7 +67,7 @@ const App = props => {
             )}
           />
           <Route path={`${process.env.PUBLIC_URL}/purchase`} component={PurchaseList} />
-          <Route path={`${process.env.PUBLIC_URL}/sync`} render={() => <Sync loginInfo={props.loginInfo} checkUser={props.checkUser} login={props.login} saveData={props.syncSave} loadData={props.syncLoad} />} />
+          <Route path={`${process.env.PUBLIC_URL}/sync`} render={() => <Sync loginInfo={props.loginInfo} checkUser={props.checkUser} login={props.login} logout={props.logout} saveData={props.syncSave} loadData={props.syncLoad} />} />
           <Modal open={props.detailCircle.open} modalClose={props.closeCircleDetail}>
             <CircleDetail circleInfo={props.detailCircle.circleInfo} favorite={props.favorite} changeFavoriteId={props.changeFavoriteId} />
           </Modal>
@@ -106,6 +106,7 @@ const mapDispatchToProps = {
   searchToFavorite,
   checkUser,
   login,
+  logout,
   syncLoad,
   syncSave,
   requestList
@@ -133,6 +134,7 @@ App.propTypes = {
   searchToFavoriteId: PropTypes.string.isRequired,
   searchToFavorite: PropTypes.func.isRequired,
   login: PropTypes.func.isRequired,
+  logout: PropTypes.func.isRequired,
   checkUser: PropTypes.func.isRequired,
   syncLoad: PropTypes.func.isRequired,
   syncSave: PropTypes.func.isRequired
