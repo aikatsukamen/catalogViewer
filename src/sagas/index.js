@@ -19,7 +19,8 @@ import {
   SYNC_SAVE,
   CHANGE_FAVORITE_ID,
   LOGOUT,
-  logoutDone
+  logoutDone,
+  DELETE_FAVORITE_CIRCLE
 } from '../actions';
 import API from '../api';
 
@@ -207,7 +208,6 @@ function* handleSyncLoad() {
     yield put(openNotify({ message: 'サーバからデータをダウンロードしています。', variant: 'info' }));
     const getResult = yield call(API.getUserData, state.reducer.login.user, state.reducer.eventName, state.reducer.login.pass);
     if (getResult.error) throw getResult.error;
-    console.log(getResult.data);
 
     yield put(applyLoadData(getResult.data));
     yield call(handleSave);
@@ -245,14 +245,6 @@ function* handleSyncSave() {
   }
 }
 
-/**
- * お気に入り処理
- * ※Reducerも発火してる
- */
-function* handleChangeFavarite(action) {
-  yield call(handleSave);
-}
-
 function* handleLogout() {
   if (window.confirm('ログアウトしますか？')) {
     yield put(logoutDone());
@@ -274,7 +266,8 @@ export default function* rootSaga() {
   yield takeEvery(LOGOUT, handleLogout);
   yield takeEvery(SYNC_LOAD, handleSyncLoad);
   yield takeEvery(SYNC_SAVE, handleSyncSave);
-
-  yield takeEvery(CHANGE_FAVORITE_ID, handleChangeFavarite);
+  // お気に入り変更、削除時にも保存したい
+  yield takeEvery(CHANGE_FAVORITE_ID, handleSave);
+  yield takeEvery(DELETE_FAVORITE_CIRCLE, handleSave);
   yield call(initialProcess);
 }

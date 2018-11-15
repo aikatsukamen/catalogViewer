@@ -100,7 +100,6 @@ const reducer = (state = initial, action) => {
       for (let i = 0; i < newFavorite.length; i++) {
         newFavorite[i].spaceNo.some((value, index) => {
           if (value === spaceNo) newFavorite[i].spaceNo.splice(index, 1);
-          return true;
         });
       }
 
@@ -120,8 +119,8 @@ const reducer = (state = initial, action) => {
       // 既存のお気に入りから削除
       for (let i = 0; i < newFavorite.length; i++) {
         newFavorite[i].spaceNo.some((value, index) => {
+          console.log(value);
           if (value === spaceNo) newFavorite[i].spaceNo.splice(index, 1);
-          return true;
         });
       }
       return { ...state, favorite: newFavorite };
