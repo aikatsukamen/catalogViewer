@@ -4,7 +4,7 @@ import { OPEN_NOTIFY, CLOSE_NOTIFY, REQUEST_LIST, SUCCESS_LIST, FAILURE_LIST, SH
 const initial = {
   status: 'init',
   error: false,
-  eventName: '芸カ17',
+  eventName: '芸カ18',
   // サークル配置
   map: [],
   // サークル情報
