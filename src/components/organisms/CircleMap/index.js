@@ -79,7 +79,7 @@ const CircleMap = props => {
           // 空のセル
           return (
             <TableCell key={`cell_${rowIndex}_${colIndex}`} className={props.classes.emptyCell}>
-              {colData}
+              　
             </TableCell>
           );
         }
