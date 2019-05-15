@@ -1,10 +1,10 @@
 import { combineReducers } from 'redux';
-import { OPEN_NOTIFY, CLOSE_NOTIFY, REQUEST_LIST, SUCCESS_LIST, FAILURE_LIST, SHOW_CIRCLE_DETAIL, CLOSE_CIRCLE_DETAIL, CHANGE_FAVORITE_ID, DELETE_FAVORITE_CIRCLE, APPLY_SEARCH_LIST, APPLY_LOAD_DATA, CHANGE_SEARCH_TO_FAVORITE_ID, LOGIN_DONE, LOGOUT_DONE } from '../actions';
+import { OPEN_NOTIFY, CLOSE_NOTIFY, REQUEST_LIST, SUCCESS_LIST, FAILURE_LIST, SHOW_CIRCLE_DETAIL, CLOSE_CIRCLE_DETAIL, CHANGE_FAVORITE_ID, DELETE_FAVORITE_CIRCLE, APPLY_SEARCH_LIST, APPLY_LOAD_DATA, CHANGE_SEARCH_TO_FAVORITE_ID, LOGIN_DONE, LOGOUT_DONE, UPDATE_EVENTNAME } from '../actions';
 
 const initial = {
   status: 'init',
   error: false,
-  eventName: '芸カ18',
+  eventName: '',
   // サークル配置
   map: [],
   // サークル情報
@@ -58,6 +58,10 @@ const reducer = (state = initial, action) => {
     }
     case APPLY_LOAD_DATA: {
       return { ...state, ...action.payload };
+    }
+    // イベント名更新
+    case UPDATE_EVENTNAME:{
+      return { ...state, eventName: action.payload };
     }
     // スペース番号を元に、サークル情報を詳細表示
     case SHOW_CIRCLE_DETAIL: {

@@ -20,7 +20,8 @@ import {
   CHANGE_FAVORITE_ID,
   LOGOUT,
   logoutDone,
-  DELETE_FAVORITE_CIRCLE
+  DELETE_FAVORITE_CIRCLE,
+  updateEventname
 } from '../actions';
 import API from '../api';
 
@@ -31,12 +32,13 @@ function* handleGetList() {
   try {
     yield put(closeNotify());
     yield put(openNotify({ message: 'サークル配置を取得しています。', variant: 'info' }));
-    const mapResult = yield call(API.getCicleMap);
+    const state = yield select();
+    const mapResult = yield call(API.getCicleMap, state.reducer.eventName);
     if (mapResult.error) throw mapResult.error;
 
     yield put(closeNotify());
     yield put(openNotify({ message: 'サークル情報を取得しています。', variant: 'info' }));
-    const circleInfoResult = yield call(API.getCicleInfo);
+    const circleInfoResult = yield call(API.getCicleInfo, state.reducer.eventName);
     if (circleInfoResult.error) throw circleInfoResult.error;
 
     yield put(successList({ map: mapResult.data, circleInfo: circleInfoResult.data }));
@@ -51,12 +53,37 @@ function* handleGetList() {
   }
 }
 
-// ローカルストレージからstateに読み込む
-function* handleLoadLocalStorage() {
+
+/**
+ * 初期処理
+ */
+function* initProcess() {
+  // ローカルストレージからstateに読み込む
   const data = localStorage.getItem('data');
   if (data) {
     const payload = JSON.parse(data);
     yield put(applyLoadData(payload));
+  }
+
+  // クエリからイベント名を取得する
+  const query = {};
+  const url = window.location.search;
+  //?を取り除くため、1から始める。複数のクエリ文字列に対応するため、&で区切る
+  const hash  = url.slice(1).split('&');    
+  const max = hash.length;
+  for (let i = 0; i < max; i++) {
+    const array = hash[i].split('=');
+    query[array[0]] = decodeURIComponent(array[1]);
+  }
+  if(!query.eventName){
+    yield put(openNotify({message: 'イベント名が指定されていません。', variant: 'error'}))
+    return;
+  }
+
+  const state = yield select();
+  yield put(updateEventname(query.eventName));
+  if(state.eventName !== query.eventName){
+   yield call(handleGetList); 
   }
 }
 
@@ -138,16 +165,6 @@ function* handleSearchToFavorite(action) {
   // localstorageに保存
   yield call(handleSave);
   yield put(changeSearchToFavoriteId(id));
-}
-
-/**
- * 初期処理
- */
-function* initialProcess() {
-  const state = yield select();
-  if (state.reducer.circleInfo.length === 0) {
-    yield call(handleGetList);
-  }
 }
 
 /**
@@ -256,7 +273,6 @@ function* handleLogout() {
 }
 
 export default function* rootSaga() {
-  yield call(handleLoadLocalStorage);
   yield takeEvery(REQUEST_LIST, handleGetList);
   yield takeEvery(SAVE_DATA, handleSave);
   yield takeEvery(SEARCH_CIRCLE, handleSearchCircle);
@@ -269,5 +285,5 @@ export default function* rootSaga() {
   // お気に入り変更、削除時にも保存したい
   yield takeEvery(CHANGE_FAVORITE_ID, handleSave);
   yield takeEvery(DELETE_FAVORITE_CIRCLE, handleSave);
-  yield call(initialProcess);
+  yield call(initProcess);
 }

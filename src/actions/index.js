@@ -19,6 +19,10 @@ export const applyLoadData = createAction(APPLY_LOAD_DATA);
 export const SAVE_DATA = 'SAVE_DATA';
 export const saveData = createAction(SAVE_DATA);
 
+// クエリからイベント更新
+export const UPDATE_EVENTNAME = 'UPDATE_EVENTNAME';
+export const updateEventname = createAction(UPDATE_EVENTNAME);
+
 // サークル詳細の表示、非表示
 export const SHOW_CIRCLE_DETAIL = 'SHOW_CIRCLE_DETAIL';
 export const showCircleDetail = createAction(SHOW_CIRCLE_DETAIL);

@@ -37,7 +37,7 @@ const App = props => {
     <div>
       <BrowserRouter>
         <div>
-          <DrawerMenu navigationLabel={'芸カ17カタログビューア'}>
+          <DrawerMenu navigationLabel={`カタログビューア(${props.eventName})`}>
             <MenuItems />
             <div>
               <Divider />
@@ -81,6 +81,7 @@ const App = props => {
 // state
 function mapStateToProps(state) {
   return {
+    eventName: state.reducer.eventName,
     status: state.reducer.status,
     map: state.reducer.map,
     favorite: state.reducer.favorite,
@@ -114,6 +115,7 @@ const mapDispatchToProps = {
 
 App.propTypes = {
   classes: PropTypes.object.isRequired,
+  eventName: PropTypes.string.isRequired,
   status: PropTypes.string.isRequired,
   favorite: PropTypes.array.isRequired,
   map: PropTypes.array.isRequired,
