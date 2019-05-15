@@ -82,7 +82,9 @@ function* initProcess() {
 
   const state = yield select();
   yield put(updateEventname(query.eventName));
-  if(state.eventName !== query.eventName){
+  console.log(state.reducer.eventName);
+  console.log(query.eventName);
+  if(state.reducer.eventName !== query.eventName){
    yield call(handleGetList); 
   }
 }
@@ -92,6 +94,7 @@ function* handleSave() {
   try {
     const state = yield select();
     const saveData = {
+      eventName: state.reducer.eventName,
       map: state.reducer.map,
       circleInfo: state.reducer.circleInfo,
       favorite: state.reducer.favorite,
